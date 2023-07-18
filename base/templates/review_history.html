@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}BookingApp{% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<div class="container mt-3">
+    {% if reviews_data %}
+        <h3>Your Reviews:</h3>
+    {% else %}
+        <h3>You did no make any reviews yet ...</h3>
+    {% endif %}
+    {% for review in reviews_data %}
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-3">
+                <img class="img-fluid" src="{{ review.hotel_photo }}" alt="">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{% url 'hotelDetails' review.hotel_name %}">{{ review.hotel_name }}</a> {{ review.hotel_stars }}</h5>
+                    {% if review.rating %}
+                        Your rating: <p class="btn btn-primary disabled mb-0">{{ review.rating }}</p>
+                    {% endif %}
+                    <hr>
+                    <p><i>{{review.comment }}</i></p>
+                </div>
+            </div>
+            <div class="card-footer">
+                {{ review.created_at }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

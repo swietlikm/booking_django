@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}BookingApp{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+    .trim-category-image {
+    object-fit: cover; /* Crop the image */
+    object-position: center; /* Set the position within the container */
+    width: 400px; /* Adjust the desired width */
+    height: 300px; /* Adjust the desired height */
+    }
+</style>
+<div class="container mt-3">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body md-2">
+            {{ form.media }}
+            {% if form_errors %}
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        {% for field_errors in form_errors.values %}
+                            {% for error in field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <form class="row justify-content-center align-items-center" method="GET">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        {{ form.check_in|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        {{ form.check_out|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        {{ form.num_guests|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group d-flex justify-content-center">
+                        <input class="btn btn-primary" type="submit" value="Set">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="container mt-3 mb-5">
+    {% if data %}
+        <h1>Categories</h1>
+    {% endif %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for data in category_data %}
+            <div class="col">
+                {% if data.hotels_counter %}
+                    <a class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-50-hover" href="{% url 'categoryListing' data.category.name %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}">
+                {% endif %}
+                <div class="card border-0 card-shadow">
+                    <div class="card-header">
+                        <h5 class="card-title">{{ data.category.name }} ({{ data.hotels_counter }})</h5>
+                    </div>
+                    <img alt="{{ data.category.name }}" class="card-img-bottom" src="{{ data.category.photo_url }}">
+                </div>
+                </a>
+          </div>
+            {% empty %}
+                <h3>No objects available...</h3>
+            {% endfor %}
+    </div>
+</div>
+
+{% comment %}
+<div class="container mb-3">
+    <h1>Popular cities:</h1>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for city in cities %}
+            <div class="col">
+                {% if city.total %}
+                    <a href="{% url 'cityListing' city.pk %}">
+                {% endif %}
+                <div class="card card-shadow">
+                    <div class="card-header">
+                        <h5 class="card-title">{{ city.name }} ({{ city.total }})</h5>
+                    </div>
+                    <img alt="{{ city.name }}" class="card-img-bottom" src="{{ city.photo_url }}">
+                </div>
+                </a>
+          </div>
+        {% endfor %}
+    </div>
+</div>
+{% endcomment %}
+
+{% endblock %}

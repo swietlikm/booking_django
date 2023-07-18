@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}BookingApp{% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<style>
+    .hotel-info {
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .hotel-info h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .hotel-info p {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .hotel-info .address {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .hotel-info .amenities ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .hotel-info .amenities ul li {
+      display: inline-block;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+</style>
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="hotel-info bg-light">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2><a href="{% url 'hotelDetails' hotel.name %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}" class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-50-hover">{{ hotel.name }}</a> {{ hotel.draw_stars }}</h2>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span class="btn btn-primary">{{ hotel.average_rating }}</span>
+                    </div>
+                </div>
+                <div class="row address">
+                    <div class="col-md-6">
+                        <span class="fw-bold">Address:</span> {{ hotel.address }} ({{ hotel.city.name }})
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{hotel.city.province.country.name}}</a> - <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{hotel.city.province.name}}</a> - <a href="{% url 'cityListing' hotel.city.pk %}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{hotel.city.name}}</a>
+                        <p><a href="{% url 'categoryListing' hotel.category %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ hotel.category }}</a></p>
+                    </div>
+                </div>
+                {% if hotel_features %}
+                <div class="amenities mt-3">
+                    <h4>Features:</h4>
+                    <ul>
+                    {% for hotel_feature in hotel_features %}
+                        <li>{{ hotel_feature.feature.description }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                <section class="mt-3">
+                    {% for hotel_photo in hotel_photos %}
+                        <img src="{{ hotel_photo.photo_url }}" alt="{{hotel_photo.description}}" class="img-thumbnail img-fluid trim-image">
+                    {% endfor %}
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<div class="container mt-3">
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ room.name }}</h5>
+                    <p class="card-text">{{ room.description }}</p>
+                    <p class="card-text"><strong>Capacity:</strong> {{ room.capacity }}</p>
+                    {% if room.roomfeatures.all %}
+                        <p class="card-text"><strong>Features:</strong> {% for feature in room.roomfeatures.all %} {{ feature.feature.description }}, {% endfor %}</p>
+                    {% endif %}
+                    <p class="card-text"><strong>Price:</strong> ${{ room.price }} per night</p>
+                    <hr>
+                    <p class="card-text"><strong>Check-in:</strong> {{ check_in }}</p>
+                    <p class="card-text"><strong>Check-out:</strong> {{ check_out }}</p>
+                    <p class="card-text"><strong>Number of guests:</strong> {{ num_guests }}</p>
+                    <p class="card-text"><strong>Total nights:</strong> {{ total_nights }}</p>
+                    <p class="card-text"><strong>Total price:</strong> ${{ total_price }}</p>
+                    {{ form.media }}
+                    {% if user.is_authenticated %}
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <input class="btn btn-primary" type="submit" value="Confirm booking" data-kwargs='"room_id": {{room.id}}}'>
+                        </form>
+                    {% else %}
+                        <br>
+                        <a href="{% url 'login' %}">Login</a> to book
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

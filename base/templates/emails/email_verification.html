@@ -1,0 +1,20 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>User Activation</title>
+</head>
+<body>
+    <h1>BookingApp - User Activation</h1>
+    <p>Thank you for signing up! To activate your account, please click the button below:</p>
+    <p>
+        <a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}" target="_blank">
+            <button style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">
+                Activate Account
+            </button>
+        </a>
+    </p>
+    <p>If the button above doesn't work, you can also copy and paste the following URL into your browser:</p>
+    <p>http://{{ domain }}{% url 'activate' uidb64=uid token=token %}</p>
+    <p>If you didn't sign up for an account on our website, please ignore this email.</p>
+</body>
+</html>

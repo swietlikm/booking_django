@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% block title %}BookingApp{% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<script>
+  // Scroll to the form on form submission
+  document.addEventListener('submit', function(event) {
+    var form = event.target;
+    setTimeout(function() {
+      form.scrollIntoView();
+    }, 0);
+  });
+</script>
+<style>
+    .hotel-info {
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .hotel-info h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .hotel-info p {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .hotel-info .address {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .hotel-info .amenities ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .hotel-info .amenities ul li {
+      display: inline-block;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+        .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      transition: 0.3s;
+      border-radius: 8px;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .card-img-top {
+      border-radius: 8px 8px 0 0;
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card-text {
+      color: #555;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0069d9;
+      border-color: #0062cc;
+    }
+</style>
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="hotel-info bg-light">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>{{ hotel.name }} {{ hotel.draw_stars }}</h2>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span class="btn btn-primary">{{ hotel.average_rating }}</span>
+                    </div>
+                </div>
+                <div class="row address">
+                    <div class="col-md-6">
+                        <span class="fw-bold">Address:</span> {{ hotel.address }} ({{ hotel.city.name }})
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{hotel.city.province.country.name}}</a> - <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{hotel.city.province.name}}</a> - <a href="{% url 'cityListing' hotel.city.pk %}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{hotel.city.name}}</a>
+                        <p><a href="{% url 'categoryListing' hotel.category %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ hotel.category }}</a></p>
+                    </div>
+                </div>
+                <p>{{ hotel.description }}</p>
+                {% if hotel_features %}
+                <div class="amenities mt-3">
+                    <h4>Features:</h4>
+                    <ul>
+                    {% for hotel_feature in hotel_features %}
+                        <li>{{ hotel_feature.feature.description }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                <section class="mt-3">
+                    {% for hotel_photo in hotel_photos %}
+                        <img src="{{ hotel_photo.photo_url }}" alt="{{hotel_photo.description}}" class="img-thumbnail img-fluid trim-image">
+                    {% endfor %}
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-3">
+    <div class="card">
+        <div class="card-body md-2">
+            {{ core_form.media }}
+            {% if core_form_errors %}
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        {% for field_errors in core_form_errors.values %}
+                            {% for error in field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <form id="core_form" class="row justify-content-center align-items-center">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        {{ core_form.check_in|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        {{ core_form.check_out|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        {{ core_form.num_guests|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group d-flex justify-content-center">
+                        <input type="submit" class="btn btn-primary" value="Set">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container mt-3">
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ room.name }}</h5>
+                    <p class="card-text">{{ room.description }}</p>
+                    <p class="card-text"><strong>Capacity:</strong> {{ room.capacity }}</p>
+                    {% if room.roomfeatures.all %}
+                        <p class="card-text"><strong>Features:</strong> {% for feature in room.roomfeatures.all %} {{ feature.feature.description }}, {% endfor %}</p>
+                    {% endif %}
+                    <p class="card-text"><strong>Price:</strong> ${{ room.price }} per night</p>
+                    {% if check_in and check_out and num_guests and not core_form_errors %}
+                        <a href="{% url 'roomBooking' hotel_name=hotel.name room_id=room.pk %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}" class="btn btn-primary">Book Now</a>
+                    {% else %}
+                        <span class="btn btn-primary disabled">Set dates</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <h4>No rooms available in the given specifics</h4>
+        {% endfor %}
+    </div>
+</div>
+
+{% if request.user.is_authenticated %}
+<div class="container mt-3">
+    <div class="row align-items-center">
+        {% if user_hotel_rating %}
+        <div class="col-md-2">
+            Your rating: <text class="btn btn-primary">{{ user_hotel_rating.value }}</text>
+        </div>
+        {% endif %}
+        <div class="col-md-2">
+            <form id="form2" method="POST">
+                {% csrf_token %}
+                {{ rate_form|crispy }}
+                <button class="btn btn-primary" type="submit" value="Rate">Rate</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12 col-md-8 col-lg-12">
+            <h4>Comments</h4>
+            {% for review in hotel_reviews %}
+                <div class="card mt-3">
+                    <div class="card-header">
+                        @{{ review.author }} | {{ review.created_at }}
+                    </div>
+                    <div class="card-body d-flex flex-row justify-content-between">
+                        {{ review.comment }}
+                        {% if review.author == user or user.is_superuser %}
+                            <form id="form3" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-warning" name="delete-review-id" value="{{review.id}}">Delete</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                No comments yet...
+            {% endfor %}
+            {% if user.is_authenticated %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ comment_form|crispy }}
+                    <input class="btn btn-success" type="submit" value="Send">
+                </form>
+            {% else %}
+                <br>
+                <a href="{% url 'login' %}">Login</a> to add comments
+            {% endif %}
+        </div>
+    </div>
+</div>
+<br>
+{% endblock %}

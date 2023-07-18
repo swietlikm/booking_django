@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %}BookingApp{% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<div class="container mt-3">
+    <div class="card">
+        <div class="card-body md-2">
+            {{ form.media }}
+            {% if form_errors %}
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        {% for field_errors in form_errors.values %}
+                            {% for error in field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <form class="row justify-content-center align-items-center">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        {{ form.check_in|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        {{ form.check_out|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        {{ form.num_guests|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group d-flex justify-content-center">
+                        <input type="submit" class="btn btn-primary" value="Set">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container mt-3">
+    {% for data in hotel_data %}
+    <div class="card card-shadow mb-3">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <a href="{% url 'hotelDetails' data.hotel.name %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}">
+                    <img class="img-fluid rounded-start" src="{{ data.first_photo_url }}" alt="">
+                </a>
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <div style="position: absolute; top: 15px; right: 20px;">
+                        <i class="bi bi-heart heart-icon" style="font-size: 1.5rem"></i>
+                    </div>
+                    <h5 class="card-title">
+                        <a href="{% url 'hotelDetails' data.hotel.name %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}" class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-50-hover">
+                            {{ data.hotel.name }}
+                        </a> {{ data.hotel.draw_stars }}
+                    </h5>
+                    <p class="btn btn-primary disabled">{{ data.hotel.average_rating }}</p>
+                    Votes: <strong>{{ data.hotel.total_rating_votes }}</strong> | Reviews: <strong>{{ data.hotel.total_comments }}</strong>
+                    <p class="card-text">{{ data.hotel.description|truncatechars:300 }}</p>
+                    {% if data.available_room_count %}
+                    <p class="card-text">Rooms available: <strong>{{ data.available_room_count }}</strong> starting from <strong>${{ data.min_price }}</strong></p>
+                    {% else %}
+                    <p class="card-text">No rooms available</p>
+                    {% endif %}
+                    <p class="card-text"><small class="text-body-secondary"><a href="{% url 'cityListing' data.hotel.city.pk %}">{{ data.hotel.city }}</a></small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <h5 class="card-title">No accommodation establishments matching your requirements...</h5>
+    {% endfor %}
+
+    {% if hotel_data.has_other_pages %}
+    <nav>
+        <ul class="pagination justify-content-center mt-3">
+            {% if hotel_data.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ hotel_data.previous_page_number }}&check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}">Previous</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+            {% endif %}
+            {% for i in hotel_data.paginator.page_range %}
+                {% if hotel_data.number == i %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}&check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                {% if hotel_data.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ hotel_data.next_page_number }}&check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}">Next</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

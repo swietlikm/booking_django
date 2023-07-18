@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}BookingApp{% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<div class="container mt-3">
+    {% if messages %}
+      <div class="alert alert-success">
+        <ul class="mb-0">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    {% if confirmed_bookings %}
+        <h3>Your bookings:</h3>
+    {% else %}
+        <h3>No bookings yet</h3>
+    {% endif %}
+    {% for booking in confirmed_bookings %}
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img class="img-fluid rounded-start" src="{{ booking.room.hotel.hotelphotos.first.photo_url }}" alt="">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h4 class="card-title"><a href="{% url 'hotelDetails' booking.room.hotel.name %}">{{ booking.room.hotel.name }}</a> {{ booking.room.hotel.draw_stars }}</h4>
+                        <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{booking.room.hotel.city.province.country.name}}</a> - <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{booking.room.hotel.city.province.name}}</a> - <a href="{% url 'cityListing' booking.room.hotel.city.pk %}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{booking.room.hotel.city.name}}</a>
+                        <h5 class="card-title mt-2"><strong>Room:</strong> {{ booking.room.name }}</h5>
+                        <p class="card-text"><strong>Check-in:</strong> {{ booking.check_in }}</p>
+                        <p class="card-text"><strong>Check-out:</strong> {{ booking.check_out }}</p>
+                        <p class="card-text"><strong>Number of guests:</strong> {{ booking.num_guests }}</p>
+                        {% if booking.special_request %}<p><strong>Special request:</strong> {{ booking.special_request }}</p>{% endif %}
+                        <p class="card-title"><strong>Status:</strong> Confirmed</p>
+                    </div>
+                </div>
+                <div class="card-footer d-flex flex-row justify-content-between align-items-center">
+                    Booked at: {{ booking.created_at }}
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                          Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Cancel booking</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Do you want to cancel booking in {{ booking.room.hotel.name }}?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" name="cancel-booking-id" value="{{booking.id}}">Confirm</button>
+                  </form>
+              </div>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+    {% if canceled_bookings %}
+        <h3>Canceled bookings:</h3>
+    {% endif %}
+    {% for booking in canceled_bookings %}
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img class="img-fluid rounded-start" src="{{ booking.room.hotel.hotelphotos.first.photo_url }}" alt="">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h4 class="card-title"><a href="{% url 'hotelDetails' booking.room.hotel.name %}">{{ booking.room.hotel.name }}</a> {{ booking.room.hotel.draw_stars }}</h4>
+                        <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{booking.room.hotel.city.province.country.name}}</a> - <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{booking.room.hotel.city.province.name}}</a> - <a href="{% url 'cityListing' booking.room.hotel.city.pk %}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{booking.room.hotel.city.name}}</a>
+                        <h5 class="card-title mt-2"><strong>Room:</strong> {{ booking.room.name }}</h5>
+                        <p class="card-text"><strong>Check-in:</strong> {{ booking.check_in }}</p>
+                        <p class="card-text"><strong>Check-out:</strong> {{ booking.check_out }}</p>
+                        <p class="card-text"><strong>Number of guests:</strong> {{ booking.num_guests }}</p>
+                        {% if booking.special_request %}<p><strong>Special request:</strong> {{ booking.special_request }}</p>{% endif %}
+                        <p class="card-title"><strong>Status:</strong> Canceled</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

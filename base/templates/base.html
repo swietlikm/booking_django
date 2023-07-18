@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+          crossorigin="anonymous">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+      <title>{% block title %}BookingApp{% endblock %}</title>
+</head>
+<body>
+<style>
+    body {
+    background: #f6f9fc;
+}
+.trim-image {
+    object-fit: cover; /* Crop the image */
+    object-position: center; /* Set the position within the container */
+    width: 300px; /* Adjust the desired width */
+    height: 200px; /* Adjust the desired height */
+}
+
+.card-shadow{
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      transition: 0.3s;
+}
+
+.card-shadow:hover{
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+    .heart-icon {
+      color: black;
+      transition: color 0.3s;
+      transform: scale(1.5);
+    }
+
+    .heart-icon:hover {
+      color: red;
+      border-radius: 50%;
+    }
+</style>
+  <header>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+    <div class="container">
+      <div>
+        <ul class="navbar-nav me-auto">
+          <li class="navbar-brand">
+            <a class="nav-link fw-semibold text-primary fs-4" href="{% url 'homePage' %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}">BookingApp</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <ul class="navbar-nav">
+          {% if user.is_authenticated %}
+          <li class="nav-item dropdown dropdown-left">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{user.username|title}}
+            </a>
+            <ul class="dropdown-menu dopdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'profile' request.user.id %}"><i class="bi bi-person"></i> Manage account</a></li>
+              <li><a class="dropdown-item" href="{% url 'bookingHistory' %}"><i class="bi bi-bag-check"></i> Bookings & Trips</a></li>
+              <li><a class="dropdown-item" href="{% url 'reviewHistory' %}"><i class="bi bi-pencil"></i> Reviews</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-heart"></i> Saved</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            </ul>
+          </li>
+          {% if user.is_superuser %}
+          <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+            <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-grey-50"></div>
+            <hr class="d-lg-none my-2 text-white-50">
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
+          </li>
+          {% endif %}
+          {% else %}
+          <li class="nav-item">
+            <a class="btn btn-primary btn-sm" href="{% url 'login' %}"><i class="bi bi-person-fill me-2"></i> Login</a>
+          </li>
+          <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+            <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-grey-50"></div>
+            <hr class="d-lg-none my-2 text-white-50">
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-outline-primary btn-sm" href="{% url 'register' %}">Register</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  </header>
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+            crossorigin="anonymous"></script>
+  </body>
+</html>

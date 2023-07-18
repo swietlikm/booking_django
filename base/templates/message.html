@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}BookingApp{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row justify-content-center align-items-center">
+    <div class="col-8 col-lg-8">
+        <div class="card text-center mt-5 p-3 shadow-sm">
+            {% if message %}
+            <p class="card-text fs-5">{{ message }}</p>
+            {% else %}
+                Something went wrong
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
