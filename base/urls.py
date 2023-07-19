@@ -31,7 +31,6 @@ urlpatterns = [
     path("category/<str:category_name>",views.CategoryListingView.as_view(), name='categoryListing'),
     path("city/<int:city_id>", views.CityListingView.as_view(), name='cityListing'),
     path("hotel/<str:hotel_name>", views.HotelDetailedView.as_view(), name='hotelDetails'),
-    path("hotel/add-to-favourite/<int:pk>", views.AddToFavouritesView.as_view(), name='addFavouriteHotel'),
     path("book/<str:hotel_name>/<int:room_id>", views.RoomBookingView.as_view(), name='roomBooking'),
 
     path("account/profile/", views.HomePageView.as_view(), name='accountDetails'),

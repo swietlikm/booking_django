@@ -589,7 +589,6 @@ class UserFavouriteView(LoginRequiredMixin, View):
         user = self.request.user
 
         favourites = UserFavourite.objects.filter(user=user)
-
         favourites_data = []
         for favourite in favourites:
             data = {
@@ -605,14 +604,12 @@ class UserFavouriteView(LoginRequiredMixin, View):
         }
         return render(request, template_name=self.template_name, context=context)
 
-
-class AddToFavouritesView(View):
-
     def post(self, request, *args, **kwargs):
         hotel_id = request.POST.get('fav_hotel_id')
-        user = request.user
+        user = self.request.user
         hotel = Hotel.objects.get(id=hotel_id)
         user_favourite = UserFavourite.objects.get(user=user, hotel=hotel)
-        if not user_favourite:
-            UserFavourite(user=user, hotel=hotel)
-        return reverse_lazy('homePage')
+        if user_favourite:
+            user_favourite.delete()
+
+        return redirect(reverse('userFavourite'))
