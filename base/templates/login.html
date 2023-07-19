@@ -2,7 +2,7 @@
 {% block title %}Login{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="container mt-5" id="main-wrapper">
+<div id="main-wrapper" class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-xl-4">
             <div class="card border-0 shadow">
@@ -16,11 +16,11 @@
                                 {% csrf_token %}
                                 {{ form|crispy }}
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <button class="btn btn-primary mt-1" type="submit">Login</button>
-                                    <a class="text-primary text-center" href="{% url 'reset_password' %}">Forgot password?</a>
+                                    <button type="submit" class="btn btn-primary mt-1">Login</button>
+                                    <a href="{% url 'reset_password' %}" class="text-primary text-center">Forgot password?</a>
                                 </div>
                             </form>
-                            <p class="text-muted text-center mt-3 mb-0">Don't have an account? <a class="text-primary ml-1" href="{% url 'register' %}">Register</a></p>
+                            <p class="text-muted text-center mt-3 mb-0">Don't have an account? <a href="{% url 'register' %}" class="text-primary ml-1">Register</a></p>
                         </div>
                     </div>
                 </div>

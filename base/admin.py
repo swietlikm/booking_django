@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from .models import *
 
 # SIMPLE MODELS
@@ -28,6 +27,7 @@ admin.site.register(HotelRating)
 # HOTEL RANKING/OPINIONS
 admin.site.register(HotelFeature)
 admin.site.register(RoomFeature)
+admin.site.register(UserFavourite)
 
 
 

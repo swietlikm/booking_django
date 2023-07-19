@@ -25,7 +25,7 @@
                     </ul>
                 </div>
             {% endif %}
-            <form class="row justify-content-center align-items-center" method="GET">
+            <form method="GET" class="row justify-content-center align-items-center">
                 <div class="col-md-2">
                     <div class="form-group">
                         {{ form.check_in|as_crispy_field }}
@@ -43,7 +43,7 @@
                 </div>
                 <div class="col-md-2">
                     <div class="form-group d-flex justify-content-center">
-                        <input class="btn btn-primary" type="submit" value="Set">
+                        <input type="submit" class="btn btn-primary" value="Set">
                     </div>
                 </div>
             </form>
@@ -60,13 +60,13 @@
         {% for data in category_data %}
             <div class="col">
                 {% if data.hotels_counter %}
-                    <a class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-50-hover" href="{% url 'categoryListing' data.category.name %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}">
+                    <a href="{% url 'categoryListing' data.category.name %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}" class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-50-hover">
                 {% endif %}
                 <div class="card border-0 card-shadow">
                     <div class="card-header">
                         <h5 class="card-title">{{ data.category.name }} ({{ data.hotels_counter }})</h5>
                     </div>
-                    <img alt="{{ data.category.name }}" class="card-img-bottom" src="{{ data.category.photo_url }}">
+                    <img src="{{ data.category.photo_url }}" class="card-img-bottom" alt="{{ data.category.name }}">
                 </div>
                 </a>
           </div>
@@ -89,7 +89,7 @@
                     <div class="card-header">
                         <h5 class="card-title">{{ city.name }} ({{ city.total }})</h5>
                     </div>
-                    <img alt="{{ city.name }}" class="card-img-bottom" src="{{ city.photo_url }}">
+                    <img src="{{ city.photo_url }}" class="card-img-bottom" alt="{{ city.name }}">
                 </div>
                 </a>
           </div>

@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -166,16 +168,11 @@ class HotelFeature(models.Model):
     hotel = models.ForeignKey(Hotel, related_name='hotelfeatures', on_delete=models.CASCADE)
     objects = models.Manager()
 
-    def __str__(self):
-        return f"@{self.feature} | {self.hotel}"
 
 class RoomFeature(models.Model):
     feature = models.ForeignKey(Feature, related_name='roomfeatures', on_delete=models.CASCADE)
     room = models.ForeignKey(Room, related_name='roomfeatures', on_delete=models.CASCADE)
     objects = models.Manager()
-
-    def __str__(self):
-        return f"@{self.feature} | {self.room}"
 
 
 class HotelReview(models.Model):
@@ -227,3 +224,12 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.author.username} | {self.room.hotel.name} | From: {self.check_in} | To: {self.check_out}"
+
+
+class UserFavourite(models.Model):
+    user = models.ForeignKey(User, related_name='userfavourites', on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, related_name='userfavourites', on_delete=models.CASCADE)
+    objects = models.Manager()
+
+    def __str__(self):
+        return f"{self.user.username} | {self.hotel.name}"

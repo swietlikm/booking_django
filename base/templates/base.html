@@ -38,6 +38,12 @@
       transform: scale(1.5);
     }
 
+    .heart-icon-fill {
+      color: red;
+      transition: color 0.3s;
+      transform: scale(1.5);
+    }
+
     .heart-icon:hover {
       color: red;
       border-radius: 50%;
@@ -64,7 +70,7 @@
               <li><a class="dropdown-item" href="{% url 'profile' request.user.id %}"><i class="bi bi-person"></i> Manage account</a></li>
               <li><a class="dropdown-item" href="{% url 'bookingHistory' %}"><i class="bi bi-bag-check"></i> Bookings & Trips</a></li>
               <li><a class="dropdown-item" href="{% url 'reviewHistory' %}"><i class="bi bi-pencil"></i> Reviews</a></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-heart"></i> Saved</a></li>
+              <li><a class="dropdown-item" href="{% url 'userFavourite' %}"><i class="bi bi-heart"></i> Saved</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
             </ul>

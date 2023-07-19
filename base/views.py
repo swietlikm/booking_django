@@ -1,27 +1,27 @@
 import datetime
 
+from django.core.mail import send_mail
 from django.contrib import messages
 from django.contrib.auth import login, get_user_model
-from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChangeView
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
-from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.generic import View, TemplateView, UpdateView, FormView
 
 from .forms import CustomRegistrationForm, HotelReviewForm, BookingDatesForm, BookingForm, HotelRatingForm
 from .models import Category, Hotel, HotelPhoto, City, Room, HotelFeature, HotelReview, HotelRating, Booking, \
-    BookingStatus
+    BookingStatus, UserFavourite
 
 
 class EmailVerificationTokenGenerator(PasswordResetTokenGenerator):
@@ -132,12 +132,12 @@ class CustomLoginView(LoginView):
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'password_reset.html'
     form_class = PasswordResetForm
-    # email_template_name = "emails/password_reset.html"
-    extra_email_context = None
-    # from_email = None
     html_email_template_name = "emails/password_reset.html"
-    # subject_template_name = "registration/password_reset_subject.txt"
     title = "BookingApp - Password reset"
+
+    def get_context_data(self, **kwargs):
+        print(kwargs)
+        return super().get_context_data()
 
 
 class CustomPasswordResetDoneView(TemplateView):
@@ -281,8 +281,10 @@ class CategoryListingView(FormView):
                 else:
                     min_price = 0
                 available_room_count = available_rooms.filter(hotel=hotel).count()
+                hotel_favourite = UserFavourite.objects.filter(hotel=hotel, user=self.request.user)
                 hotel_data.append({
                     'hotel': hotel,
+                    'hotel_favourite': hotel_favourite,
                     'min_price': min_price,
                     'first_photo_url': first_photo_url,
                     'available_room_count': available_room_count,
@@ -300,8 +302,10 @@ class CategoryListingView(FormView):
                     min_price = 0
 
                 available_room_count = available_hotel_rooms.filter(hotel=hotel).count()
+                hotel_favourite = UserFavourite.objects.filter(hotel=hotel, user=self.request.user)
                 hotel_data.append({
                     'hotel': hotel,
+                    'hotel_favourite': hotel_favourite,
                     'min_price': min_price,
                     'first_photo_url': first_photo_url,
                     'available_room_count': available_room_count,
@@ -327,6 +331,20 @@ class CategoryListingView(FormView):
         }
 
         return render(request, template_name=self.template_name, context=context)
+
+    def post(self, request, *args, **kwargs):
+        category_name = kwargs.get('category_name')
+        hotel_id = request.POST.get('fav_hotel_id')
+        user = self.request.user
+        hotel = Hotel.objects.get(id=hotel_id)
+        user_favourite = UserFavourite.objects.filter(user=user, hotel=hotel)
+        if not user_favourite:
+            user_favourite = UserFavourite(user=user, hotel=hotel)
+            user_favourite.save()
+        else:
+            user_favourite = UserFavourite.objects.get(user=user, hotel=hotel)
+            user_favourite.delete()
+        return redirect(reverse('categoryListing', kwargs={'category_name': category_name}))
 
 
 class CityListingView(View):
@@ -562,3 +580,39 @@ class ReviewHistoryView(LoginRequiredMixin, View):
             'reviews_data': reviews_data
         }
         return render(request, template_name=self.template_name, context=context)
+
+
+class UserFavouriteView(LoginRequiredMixin, View):
+    template_name = 'favourites.html'
+
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+
+        favourites = UserFavourite.objects.filter(user=user)
+
+        favourites_data = []
+        for favourite in favourites:
+            data = {
+                'hotel': favourite.hotel,
+                'hotel_name': favourite.hotel.name,
+                'hotel_photo': favourite.hotel.hotelphotos.first().photo_url,
+                'hotel_stars': favourite.hotel.draw_stars,
+            }
+            favourites_data.append(data)
+
+        context = {
+            'favourites_data': favourites_data
+        }
+        return render(request, template_name=self.template_name, context=context)
+
+
+class AddToFavouritesView(View):
+
+    def post(self, request, *args, **kwargs):
+        hotel_id = request.POST.get('fav_hotel_id')
+        user = request.user
+        hotel = Hotel.objects.get(id=hotel_id)
+        user_favourite = UserFavourite.objects.get(user=user, hotel=hotel)
+        if not user_favourite:
+            UserFavourite(user=user, hotel=hotel)
+        return reverse_lazy('homePage')

@@ -4,7 +4,7 @@
 {% load static %}
 {% block content %}
 <div class="container mt-3">
-    <div class="card">
+    <div class="card border-0 shadow-sm">
         <div class="card-body md-2">
             {{ form.media }}
             {% if form_errors %}
@@ -54,9 +54,18 @@
             </div>
             <div class="col-md-8">
                 <div class="card-body">
-                    <div style="position: absolute; top: 15px; right: 20px;">
-                        <i class="bi bi-heart heart-icon" style="font-size: 1.5rem"></i>
-                    </div>
+                    {% if user.is_authenticated %}
+                        <div style="position: absolute; top: 15px; right: 20px;">
+                            <form method="POST">
+                                {% csrf_token %}
+                                {% if data.hotel_favourite %}
+                                    <button type="submit" style="border: none; background-color: transparent;" name="fav_hotel_id" value="{{data.hotel.id}}"><i class="bi bi-heart-fill heart-icon-fill" style="font-color: red; font-size: 1.5rem"></i></button>
+                                {% else %}
+                                <button type="submit" style="border: none; background-color: transparent;" name="fav_hotel_id" value="{{data.hotel.id}}"><i class="bi bi-heart heart-icon" style="font-size: 1.5rem"></i></button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    {% endif %}
                     <h5 class="card-title">
                         <a href="{% url 'hotelDetails' data.hotel.name %}?check_in={{check_in}}&check_out={{check_out}}&num_guests={{num_guests}}" class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-50-hover">
                             {{ data.hotel.name }}
@@ -70,7 +79,7 @@
                     {% else %}
                     <p class="card-text">No rooms available</p>
                     {% endif %}
-                    <p class="card-text"><small class="text-body-secondary"><a href="{% url 'cityListing' data.hotel.city.pk %}">{{ data.hotel.city }}</a></small></p>
+                    <small><a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{data.hotel.city.province.country.name}}</a> - <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{data.hotel.city.province.name}}</a> - <a href="{% url 'cityListing' data.hotel.city.pk %}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{data.hotel.city.name}}</a></small>
                 </div>
             </div>
         </div>

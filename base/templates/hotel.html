@@ -121,7 +121,7 @@
     </div>
 </div>
 <div class="container mt-3">
-    <div class="card">
+    <div class="card shadow-sm">
         <div class="card-body md-2">
             {{ core_form.media }}
             {% if core_form_errors %}
@@ -211,7 +211,7 @@
         <div class="col-12 col-md-8 col-lg-12">
             <h4>Comments</h4>
             {% for review in hotel_reviews %}
-                <div class="card mt-3">
+                <div class="card shadow-sm mt-3">
                     <div class="card-header">
                         @{{ review.author }} | {{ review.created_at }}
                     </div>

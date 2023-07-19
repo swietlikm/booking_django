@@ -1,9 +1,13 @@
 """
 Main urls for base of booking app
 """
-from django.contrib.auth.views import LogoutView, PasswordResetConfirmView
 from django.urls import path
-
+from django.contrib.auth.views import (
+    LogoutView,
+    PasswordResetConfirmView,
+    PasswordResetDoneView,
+    PasswordResetCompleteView
+)
 from . import views
 
 urlpatterns = [
@@ -27,10 +31,12 @@ urlpatterns = [
     path("category/<str:category_name>",views.CategoryListingView.as_view(), name='categoryListing'),
     path("city/<int:city_id>", views.CityListingView.as_view(), name='cityListing'),
     path("hotel/<str:hotel_name>", views.HotelDetailedView.as_view(), name='hotelDetails'),
+    path("hotel/add-to-favourite/<int:pk>", views.AddToFavouritesView.as_view(), name='addFavouriteHotel'),
     path("book/<str:hotel_name>/<int:room_id>", views.RoomBookingView.as_view(), name='roomBooking'),
 
     path("account/profile/", views.HomePageView.as_view(), name='accountDetails'),
     path("account/reviews/", views.ReviewHistoryView.as_view(), name='reviewHistory'),
+    path("account/favourite/", views.UserFavouriteView.as_view(), name='userFavourite'),
 
     path("bookings/", views.BookingHistoryView.as_view(), name='bookingHistory'),
 ]
