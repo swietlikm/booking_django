@@ -16,7 +16,7 @@
     {% if confirmed_bookings %}
         <h3>Your bookings:</h3>
     {% else %}
-        <h3>No bookings yet</h3>
+        <h3>No active bookings yet</h3>
     {% endif %}
     {% for booking in confirmed_bookings %}
         <div class="card mb-3">
@@ -66,6 +66,7 @@
         </div>
     {% endfor %}
     {% if canceled_bookings %}
+        <hr class="border border-secondary border-2 opacity-25">
         <h3>Canceled bookings:</h3>
     {% endif %}
     {% for booking in canceled_bookings %}
