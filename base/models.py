@@ -225,6 +225,10 @@ class Booking(models.Model):
     def __str__(self):
         return f"{self.author.username} | {self.room.hotel.name} | From: {self.check_in} | To: {self.check_out}"
 
+    @property
+    def total_nights(self):
+        return ""
+
 
 class UserFavourite(models.Model):
     user = models.ForeignKey(User, related_name='userfavourites', on_delete=models.CASCADE)

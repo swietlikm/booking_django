@@ -1,13 +1,17 @@
 import datetime
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Min, Count, Q
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
+from django.utils.html import strip_tags
 from django.utils.http import urlencode
-from django.views.generic import View, TemplateView, FormView, ListView
+from django.views.generic import View, TemplateView, FormView, ListView, UpdateView
 
 from base.forms import HotelReviewForm, BookingDatesForm, BookingForm, HotelRatingForm
 from base.models import Category, Hotel, HotelPhoto, City, Room, HotelFeature, HotelReview, HotelRating, Booking, \
@@ -16,6 +20,8 @@ from base.models import Category, Hotel, HotelPhoto, City, Room, HotelFeature, H
 
 # Constant queries
 booking_status_confirmed = get_object_or_404(BookingStatus, name='Confirmed')
+booking_status_pending = get_object_or_404(BookingStatus, name='Pending')
+booking_status_rejected = get_object_or_404(BookingStatus, name='Rejected')
 booking_status_canceled = get_object_or_404(BookingStatus, name='Canceled')
 
 
@@ -450,8 +456,10 @@ class BookingHistoryView(LoginRequiredMixin, TemplateView):
         # Fetch confirmed and canceled bookings for the current user and order them by creation date
         confirmed_bookings = Booking.objects.filter(author=user, status=booking_status_confirmed).order_by('-created_at')
         canceled_bookings = Booking.objects.filter(author=user, status=booking_status_canceled).order_by('-created_at')
+        pending_bookings = Booking.objects.filter(author=user, status=booking_status_pending).order_by('-created_at')
         context['confirmed_bookings'] = confirmed_bookings
         context['canceled_bookings'] = canceled_bookings
+        context['pending_bookings'] = pending_bookings
         return context
 
     def post(self, request, *args, **kwargs):
@@ -535,3 +543,53 @@ class UserFavouriteView(LoginRequiredMixin, ListView):
         except UserFavourite.DoesNotExist:
             pass  # If the favorite doesn't exist, do nothing.
         return redirect(reverse('userFavourite'))
+
+
+class BookingsView(PermissionRequiredMixin, ListView):
+    permission_required = 'base.booking_add'
+    template_name = 'booking_list.html'
+    model = Booking
+    context_object_name = 'bookings'
+
+
+class BookingUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'base.booking_change'
+    template_name = 'booking_update.html'
+    model = Booking
+    fields = ['status']
+    success_url = reverse_lazy('bookingsList')
+
+    def form_valid(self, form):
+        status = form.instance.status
+        self._send_email_booking_status_changed(status)
+        return super().form_valid(form)
+
+    def _send_email_booking_status_changed(self, status):
+        current_site = get_current_site(self.request)
+        context = self.get_context_data()
+        booking = context.get('booking')
+        user = booking.author
+        hotel = booking.room.hotel.name
+        check_in = booking.check_in
+        check_out = booking.check_out
+
+        subject = 'BookingApp - Booking status changed'
+        from_email = 'mswbooking@gmail.com'
+        to = [user.email]
+        html_message = render_to_string(
+            'emails/booking_status_changed.html',
+            {
+                'domain': current_site.domain,
+                'hotel': hotel,
+                'check_in': check_in,
+                'check_out': check_out,
+                'status': status
+            }
+        )
+        plain_message = strip_tags(html_message)
+
+        send_mail(subject=subject,
+                  message=plain_message,
+                  from_email=from_email,
+                  recipient_list=to,
+                  html_message=html_message)

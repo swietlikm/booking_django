@@ -65,6 +65,31 @@
           </div>
         </div>
     {% endfor %}
+        {% if pending_bookings %}
+        <hr class="border border-secondary border-2 opacity-25">
+        <h3>Pending bookings:</h3>
+    {% endif %}
+    {% for booking in pending_bookings %}
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img class="img-fluid rounded-start" src="{{ booking.room.hotel.hotelphotos.first.photo_url }}" alt="">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h4 class="card-title"><a href="{% url 'hotelDetails' booking.room.hotel.name %}">{{ booking.room.hotel.name }}</a> {{ booking.room.hotel.draw_stars }}</h4>
+                        <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{booking.room.hotel.city.province.country.name}}</a> - <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{booking.room.hotel.city.province.name}}</a> - <a href="{% url 'cityListing' booking.room.hotel.city.pk %}" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{booking.room.hotel.city.name}}</a>
+                        <h5 class="card-title mt-2"><strong>Room:</strong> {{ booking.room.name }}</h5>
+                        <p class="card-text"><strong>Check-in:</strong> {{ booking.check_in }}</p>
+                        <p class="card-text"><strong>Check-out:</strong> {{ booking.check_out }}</p>
+                        <p class="card-text"><strong>Number of guests:</strong> {{ booking.num_guests }}</p>
+                        {% if booking.special_request %}<p><strong>Special request:</strong> {{ booking.special_request }}</p>{% endif %}
+                        <p class="card-title"><strong>Status:</strong> Canceled</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
     {% if canceled_bookings %}
         <hr class="border border-secondary border-2 opacity-25">
         <h3>Canceled bookings:</h3>

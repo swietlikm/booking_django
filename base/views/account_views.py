@@ -15,7 +15,7 @@ from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.generic import View, TemplateView, UpdateView, FormView
 
-from base.forms import CustomRegistrationForm
+from base.forms import CustomRegistrationForm, CustomProfileForm
 
 
 class EmailVerificationTokenGenerator(PasswordResetTokenGenerator):
@@ -166,7 +166,7 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 class ProfileView(LoginRequiredMixin, UpdateView):
     template_name = 'account/profile.html'
     model = User
-    fields = ['username', 'first_name', 'last_name']
+    form_class = CustomProfileForm
 
     def get_success_url(self):
         return reverse('profile', kwargs={'pk': self.request.user.pk})

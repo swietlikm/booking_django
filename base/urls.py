@@ -36,5 +36,7 @@ urlpatterns = [
     path("account/reviews/", core_views.ReviewHistoryView.as_view(), name='reviewHistory'),
     path("account/favourite/", core_views.UserFavouriteView.as_view(), name='userFavourite'),
 
-    path("bookings/", core_views.BookingHistoryView.as_view(), name='bookingHistory'),
+    path("booking-history/", core_views.BookingHistoryView.as_view(), name='bookingHistory'),
+    path("bookings/", core_views.BookingsView.as_view(), name='bookingsList'),
+    path("bookings/<int:pk>/update", core_views.BookingUpdateView.as_view(), name='bookingUpdate'),
 ]

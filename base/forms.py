@@ -1,7 +1,5 @@
 import datetime
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
-from crispy_bootstrap5.bootstrap5 import FloatingField
+
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -46,6 +44,41 @@ class CustomRegistrationForm(UserCreationForm):
         fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'phone_number', 'email']
 
 
+class CustomProfileForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    phone_number = forms.IntegerField(required=True)
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if len(str(phone_number)) != 9:
+            self._update_errors(
+                forms.ValidationError(
+                    {
+                        "phone_number": "Phone number must contain 9 digits"
+                    }
+                )
+            )
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        user = self.instance
+
+        if email and email.lower() != user.email.lower():
+            if self._meta.model.objects.filter(email__iexact=email).exists():
+                self._update_errors(
+                    forms.ValidationError(
+                        {
+                            "email": "This email already exists in the database"
+                        }
+                    )
+                )
+        return email
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'phone_number', 'email']
+
+
 class HotelReviewForm(forms.ModelForm):
     class Meta:
         model = HotelReview
@@ -88,7 +121,7 @@ class BookingDatesForm(forms.ModelForm):
         fields = ['check_in', 'check_out', 'num_guests']
         widgets = {
             'check_in': DatePickerInput(),
-            'check_out': DatePickerInput(),
+            'check_out': DatePickerInput(range_from='check_in'),
         }
         labels = {
             'check_in': "Check-in",
