@@ -98,13 +98,14 @@ The application defines several forms:
 The application sends email notifications for various actions, such as booking confirmation and booking status changes. Email templates are located in the `emails` directory. Moreover application using email system for account activation and password reset.
 
 ## Screenshots
-![image](https://github.com/swietlikm/booking_django/assets/121583766/0a6bd91f-893b-45de-a587-28bc25c1491c)
-![image](https://github.com/swietlikm/booking_django/assets/121583766/8672face-0981-49dc-8490-e1cd0c8ce93d)
-![image](https://github.com/swietlikm/booking_django/assets/121583766/e2e7173f-a6a4-4ba3-9f34-bda920f5995d)
-![image](https://github.com/swietlikm/booking_django/assets/121583766/3900b9f1-36aa-4720-8a6a-dcbfc2209770)
-![image](https://github.com/swietlikm/booking_django/assets/121583766/87e71f18-273f-4f63-ab78-1c8f11350669)
-![image](https://github.com/swietlikm/booking_django/assets/121583766/b3bf3a5b-6d10-4cd6-bdb3-2365f40833c8)
-![image](https://github.com/swietlikm/booking_django/assets/121583766/9a679ed5-3c56-4c2a-97ab-7b33c840f8df)
+![image](https://github.com/swietlikm/booking_django/assets/121583766/b92b311b-4e08-470d-b8f2-38c36eb0aa70)
+![image](https://github.com/swietlikm/booking_django/assets/121583766/873aab21-46fc-4bc1-8082-797315b230b1)
+![image](https://github.com/swietlikm/booking_django/assets/121583766/9387898d-b594-4473-9225-c22bb1c93ef7)
+![image](https://github.com/swietlikm/booking_django/assets/121583766/5eec556d-ec08-4041-9565-f234d2eb967a)
+![image](https://github.com/swietlikm/booking_django/assets/121583766/966d0498-d903-4c50-b46c-feb03bd523d9)
+![image](https://github.com/swietlikm/booking_django/assets/121583766/9b26b2eb-5f5f-4115-9bbc-0d454108454f)
+![image](https://github.com/swietlikm/booking_django/assets/121583766/212ad033-8d98-4f95-bac3-b70cd098515d)
+
 
 
 ---
