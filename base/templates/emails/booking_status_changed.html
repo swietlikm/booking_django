@@ -1,0 +1,14 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Status Changed</title>
+</head>
+<body>
+    <h1>BookingApp - Booking Status Changed</h1>
+    <p>Your booking in <strong>{{ hotel }}</strong> from {{ check_in }} to {{ check_out }}</p>
+    <p>Status changed to: <strong>{{ status }}</strong><p>
+    <p>See your bookings history <a href="http://{{ domain }}{% url 'bookingHistory' %}" target="_blank">here</a></p>
+    <p>Thanks</p>
+    <p>BookingApp Team</p>
+</body>
+</html>
